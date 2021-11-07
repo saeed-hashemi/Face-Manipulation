@@ -4,10 +4,29 @@ from wand.image import Image
 
 
 def resize_element(image, shape, resize_ratio, element_name):
+    """
+    resize nose or left_eye in 4 steps:
+        - crop ROI
+        - transpose points to the destination
+        - resize the elements by using the calculated points and distortion with Shepards method
+        - replace the distorted ROI inside the image
+
+    Parameters
+    ---------------------------
+    image: numpy.ndarray-> mat, required
+    shape: numpy 2D array-> landmarks points, required
+    resize_ratio: float -> resizing element, required
+    element_name: string -> can be "nose" or "left_eye", required
+
+    Returns
+    ---------------------------
+    image
+        OpenCV mat image -> applied resized element inside the ROI 
+    """
     # crop ROI
     x, y, w, h, roi = crop_roi(image, shape, element=element_name)
-    # generate points ans destinations
-    trans_points = transform_points(
+    # generate points and destinations
+    trans_points = transpose_points(
         shape, x, y, w, h, resize_ratio, element=element_name)
     # using shepard method to rescale element
     with Image.from_array(roi) as img:
@@ -20,6 +39,21 @@ def resize_element(image, shape, resize_ratio, element_name):
 
 
 def crop_roi(image, shape, element):
+    """
+    crop the ROI for the nose (bottom point of the left and right eye and the bottom point of the nose)
+    or left_eye (left corner of eyebrow and right corner of eye and a dynamic vertical margin for bottom)  elements by using the landmarks
+
+    Parameters
+    ---------------------------
+    image: numpy.ndarray-> mat, required
+    shape: numpy 2D array-> landmarks points, required
+    element: string -> can be "nose" or "left_eye", required
+
+    Returns
+    ---------------------------
+    x, y, w, h, roi : coordinates, width, and height of the ROI. The last value is a copy of the ROI.
+
+    """
     points = None
     if element == "nose":
         points = np.vstack((shape[41], shape[46], shape[33]))
@@ -34,8 +68,25 @@ def crop_roi(image, shape, element):
     return x, y, w, h, roi.copy()
 
 
-def transform_points(shape, x, y, w, h, resize_ratio, element):
-    # find ROI for nose (buttom point of left and right eye and the buttom point of the nose)
+def transpose_points(shape, x, y, w, h, resize_ratio, element):
+    """
+    Transposing the key points by resize_ratio
+
+    Parameters
+    ---------------------------
+    shape: numpy 2D array-> landmarks points, required
+    x: integer
+    y: integer
+    w: integer
+    h: integer
+    resize_ratio: float -> resizing element, required
+    element: string -> can be "nose" or "left_eye", required
+
+    Returns
+    ---------------------------
+    set of points (x0,y0,x0_transposed,y0_transposed, ...)-> for 3 points contains 12 values
+    """
+    
     if element == "nose":
         t0 = np.array([shape[31][0]-x, round((shape[30][1]-y))])
         t1 = np.array([shape[35][0]-x, round((shape[30][1]-y))])
