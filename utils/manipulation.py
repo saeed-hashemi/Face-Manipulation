@@ -24,24 +24,26 @@ def crop_roi(image, shape, element):
     if element == "nose":
         points = np.vstack((shape[41], shape[46], shape[33]))
     elif element == "left_eye":
-        #TODO: set a dynamic margin for buttom of the roi
+
         vertical_margin = shape[47]+(shape[47]-shape[44])
-        points = np.vstack((shape[26], shape[42], shape[45], shape[46], vertical_margin))
+        points = np.vstack(
+            (shape[26], shape[42], shape[45], shape[46], vertical_margin))
     (x, y, w, h) = cv2.boundingRect(points)
     roi = image[y:y + h, x:x + w]
-    
+
     return x, y, w, h, roi.copy()
 
 
 def transform_points(shape, x, y, w, h, resize_ratio, element):
     # find ROI for nose (buttom point of left and right eye and the buttom point of the nose)
     if element == "nose":
-        t0 = [shape[31][0]-x, round((shape[30][1]-y))]
-        t1 = [shape[35][0]-x, round((shape[30][1]-y))]
-        deltaX = t1[0]-t0[0]
-        move = deltaX * resize_ratio
-        t0_new = np.array([round(t0[0]-move), round(t0[1])])
-        t1_new = np.array([round(t1[0]+move), round(t1[1])])
+        t0 = np.array([shape[31][0]-x, round((shape[30][1]-y))])
+        t1 = np.array([shape[35][0]-x, round((shape[30][1]-y))])
+
+        deltaXY = t1-t0
+        move = np.round(deltaXY * resize_ratio)
+        t0_new = t0-move
+        t1_new = t1+move
 
         points = (
             0, 0, 0, 0,
