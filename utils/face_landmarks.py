@@ -20,7 +20,20 @@ FACIAL_LANDMARKS_IDXS = {
 predictor = dlib.shape_predictor('model/shape_predictor_68_face_landmarks.dat')
 
 
-def find_face_landmarks(gray, rect) -> dict:
+def find_face_landmarks(gray, rect):
+    """
+    Finds the landmarks points by using dlib
+
+    Parameters
+    ---------------------------
+    gray: numpy.ndarray-> grayscaled mat, required
+    rect: dlib.rectangle-> the detected face, required
+
+    Returns
+    ---------------------------
+    matrix[0:68]
+        contains set of (x, y) position of landmarks
+    """
     # Get the landmark points
     shape = predictor(gray, rect)
     # Convert it to the NumPy Array
