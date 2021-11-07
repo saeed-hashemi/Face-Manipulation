@@ -1,2 +1,3 @@
 *.dat
-__pychache__/
+*.pyc
+__pycache__/
