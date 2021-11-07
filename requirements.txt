@@ -1,0 +1,4 @@
+opencv-contrib-python==4.5.4.58
+numpy==1.21.4
+dlib==19.22.1 
+Wand==0.6.7
