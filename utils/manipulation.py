@@ -25,8 +25,8 @@ def crop_roi(image, shape, element):
         points = np.vstack((shape[41], shape[46], shape[33]))
     elif element == "left_eye":
         #TODO: set a dynamic margin for buttom of the roi
-        points = np.vstack((shape[26], shape[42], shape[45], shape[46], [
-                           shape[47][0], shape[47][1]+50]))
+        vertical_margin = shape[47]+(shape[47]-shape[44])
+        points = np.vstack((shape[26], shape[42], shape[45], shape[46], vertical_margin))
     (x, y, w, h) = cv2.boundingRect(points)
     roi = image[y:y + h, x:x + w]
     
