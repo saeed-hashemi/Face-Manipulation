@@ -21,12 +21,12 @@ if __name__ == '__main__':
     # predictor = dlib.shape_predictor('model/shape_predictor_68_face_landmarks.dat')
 
     image = cv2.imread(args["image"])
-    image = cv2.GaussianBlur(image, (11, 11), 0)
+    # image = cv2.GaussianBlur(image, (11, 11), 0)
     image = cv2.resize(image, (round(
-        image.shape[1]/args["resize"]), round(image.shape[0]/args["resize"])), interpolation=cv2.INTER_AREA)
+        image.shape[1]/float(args["resize"])), round(image.shape[0]/float(args["resize"]))), interpolation=cv2.INTER_AREA)
 
     # initilize the resize ratio for nose and left eye
-    resize_ratio = args["threshold"]/200
+    resize_ratio = int(args["threshold"])/200
 
     elements = ["nose", "left_eye"]
 
