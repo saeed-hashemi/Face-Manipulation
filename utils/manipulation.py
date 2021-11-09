@@ -30,6 +30,8 @@ def resize_element(image, shape, resize_ratio, element_name):
         shape, x, y, w, h, resize_ratio, element=element_name)
     # using shepard method to rescale element
     with Image.from_array(roi) as img:
+        # making localization to avoid breaking other parts (default value is 2)
+        img.artifacts['shepards:power'] = '2'
         img.distort('shepards', trans_points)
         roi = np.array(img)
 
@@ -92,6 +94,7 @@ def transpose_points(shape, x, y, w, h, resize_ratio, element):
         t1 = np.array([shape[35][0]-x, round((shape[30][1]-y))])
 
         deltaXY = t1-t0
+        # TODO: divide the resize_ratio base on the distance of each side of nose to the center (to better suport side face)
         move = np.round(deltaXY * resize_ratio)
         t0_new = t0-move
         t1_new = t1+move
@@ -123,5 +126,4 @@ def transpose_points(shape, x, y, w, h, resize_ratio, element):
             t2[0], t2[1], t2_new[0], t2_new[1],
             t3[0], t3[1], t3_new[0], t3_new[1],
         )
-        print(points)
     return points
