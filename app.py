@@ -8,7 +8,7 @@ from utils.manipulation import resize_element
 if __name__ == '__main__':
     # construct the argument parser and parse the arguments
     app = argparse.ArgumentParser()
-    app.add_argument("-i", "--image", type=str, default="face.png",
+    app.add_argument("-i", "--image", type=str, default="face.jpg",
                      help="path to input image")
     app.add_argument("-t", "--threshold", type=str, default=-20,
                      help="percentage of resizing ratio")
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     image = cv2.imread(args["image"])
     # image = cv2.GaussianBlur(image, (11, 11), 0)
     image = cv2.resize(image, (round(
-        image.shape[1]/float(args["resize"])), round(image.shape[0]/float(args["resize"]))), interpolation=cv2.INTER_AREA)
+        image.shape[1]*float(args["resize"])), round(image.shape[0]*float(args["resize"]))), interpolation=cv2.INTER_AREA)
 
     # initilize the resize ratio for nose and left eye
     resize_ratio = int(args["threshold"])/200
